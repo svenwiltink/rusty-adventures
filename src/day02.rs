@@ -25,7 +25,7 @@ type Input = Vec<Level>;
 
 #[derive(Debug)]
 struct Level {
-    data: Vec<u32>
+    data: Vec<i32>
 }
 
 impl Level {
@@ -36,56 +36,28 @@ impl Level {
     }
 
     fn is_valid(&self) -> bool {
-        let increasing = self.all_increasing();
-        let decreasing = self.all_decreasing();
+
+        let diffs: Vec<i32> = self.data
+            .windows(2)
+            .map(|c| c[0] - c[1])
+            .collect();
+
+        let increasing = diffs.iter()
+            .map(|item| *item > 0)
+            .all(|x| x == true);
+
+        let decreasing = diffs.iter()
+            .map(|item| *item < 0)
+            .all(|x| x == true);
 
         if !increasing && !decreasing {
             return false
         }
 
-        self.steps_valid()
-    }
-
-    fn steps_valid(&self) -> bool {
-        let mut current = &self.data[0];
-
-        for item in &self.data[1..] {
-            if item.abs_diff(*current) > 3 {
-                return false
-            }
-
-            current = item
-        }
-
-        true
-    }
-
-    fn all_increasing(&self) -> bool {
-        let mut current = &self.data[0];
-
-        for item in &self.data[1..] {
-            if item <= current {
-                return false;
-            }
-
-            current = item
-        }
-
-        true
-    }
-
-    fn all_decreasing(&self) -> bool {
-        let mut current = &self.data[0];
-
-        for item in &self.data[1..] {
-            if item >= current {
-                return false;
-            }
-
-            current = item
-        }
-
-        true
+        diffs.iter()
+            .map(|x| x.abs())
+            .map(|x| x > 0 && x <= 3)
+            .all(|x| x == true)
     }
 
     fn is_valid_mutations(&self) -> bool{
