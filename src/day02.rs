@@ -46,12 +46,14 @@ impl Level {
             .map(|item| *item > 0)
             .all(|x| x == true);
 
-        let decreasing = diffs.iter()
-            .map(|item| *item < 0)
-            .all(|x| x == true);
+        if !increasing {
+            let decreasing = diffs.iter()
+                .map(|item| *item < 0)
+                .all(|x| x == true);
 
-        if !increasing && !decreasing {
-            return false
+            if !decreasing {
+                return false
+            }
         }
 
         diffs.iter()
